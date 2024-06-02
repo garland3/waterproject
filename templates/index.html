@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GPIO Control</title>
+</head>
+<body>
+    <h1>GPIO Control</h1>
+    {%if message%}
+	<p>{{message}}</p>
+    {%endif%}
+    <table border="1">
+        <tr>
+            <th>Device</th>
+            <th>Action</th>
+        </tr>
+        {% for device, pin in devices.items() %}
+        <tr>
+            <td>{{ device }}</td>
+            <td>
+                <form action="/toggle/{{ device }}/on" method="post" style="display:inline;">
+                    <button type="submit">Turn On</button>
+                </form>
+                <form action="/toggle/{{ device }}/off" method="post" style="display:inline;">
+                    <button type="submit">Turn Off</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
