@@ -1,62 +1,94 @@
-import RPi.GPIO as GPIO
+# conda activate waterproject
+import platform
+computer_name = platform.node()
+print(computer_name)
+if computer_name!="DESKTOP-7DC3UA9":
+    import RPi.GPIO as GPIO
+else:
+    from myfake import GPIO
+
+
 import time
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-app = FastAPI()
+import json
+import os
 
-# Pin Definitions
-PIN_POWER_CABLE_SOLENOID = 12
-PIN_VALVE_1 = 25
-PIN_VALVE_2 = 23
-PIN_VALVE_3 = 18
 
-# Device to pin mapping
-device_pins = {
-    "power_cable_solenoid": PIN_POWER_CABLE_SOLENOID,
-    "valve_1": PIN_VALVE_1,
-    "valve_2": PIN_VALVE_2,
-    "valve_3": PIN_VALVE_3
-}
+class Device:
+    def __init__(self, name, pin):
+        self.name = name
+        self.pin = pin
+        self.state = False
+        self.turn_on_times=[]
+        self.turn_off_times=[]
+
+    def toggle(self):
+        self.state = not self.state
+        GPIO.output(self.pin, GPIO.LOW if self.state else GPIO.HIGH)
+
+devices = [
+    Device("power_cable_solenoid", 12),
+    Device("valve_1", 25),
+    Device("valve_2", 23),
+    Device("valve_3", 18)
+]
 
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
-for pin in device_pins.values():
-    GPIO.setup(pin, GPIO.OUT)
-    GPIO.output(pin, GPIO.HIGH)  # Ensure all pins are off initially
+for device in devices:
+    GPIO.setup(device.pin, GPIO.OUT)
+    GPIO.output(device.pin, GPIO.HIGH)  # Ensure all pins are off initially
+    
 
-# Create templates
+def load_schedule(file_path='schedule.json'):
+    if not os.path.exists(file_path):
+        return devices
+    
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    
+    for device_data in data:
+        device = next((d for d in devices if d.name == device_data["name"] and d.pin == device_data["pin"]), None)
+        if device:
+            device.turn_on_times = device_data["turn_on_times"]
+            device.turn_off_times = device_data["turn_off_times"]
+    
+    return devices
+
+def write_schedule(devices, file_path='schedule.json'):
+    data = []
+    for device in devices:
+        data.append({
+            "name": device.name,
+            "pin": device.pin,
+            "turn_on_times": device.turn_on_times,
+            "turn_off_times": device.turn_off_times
+        })
+    
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+# ----------------------- FastAPI -----------------------
+
+app = FastAPI()
+
+
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "devices": device_pins})
+    return templates.TemplateResponse("index.html", {"request": request, "devices": devices})
 
-@app.post("/toggle/{device_name}/{action}")
-async def toggle_device(device_name: str, action: str, request: Request):
-    pin = device_pins.get(device_name)
-    if pin is not None:
-        if action == "on":
-            GPIO.output(pin, GPIO.LOW)  # Turn device on (inverted logic)
-        elif action == "off":
-            GPIO.output(pin, GPIO.HIGH)  # Turn device off (inverted logic)
-    message =  {"device": device_name, "action": action}
-    return templates.TemplateResponse("index.html", {"request": request, "devices": device_pins, "message":message})
+@app.post("/toggle/{pin}")
+async def toggle_device(pin: int, request: Request):
+    for device in devices:
+        if device.pin == pin:
+            device.toggle()
+            break
+    return templates.TemplateResponse("index.html", {"request": request, "devices": devices})
 
-
-# @app.on_event("shutdown")
-def shutdown_event():
-    GPIO.cleanup()
-
-def startup_event():
-    print("starting up")
-
-app.add_event_handler("shutdown", shutdown_event)
-app.add_event_handler("startup", startup_event)
-
-#if __name__ == "__main__":
-#    import uvicorn
-#    print("running localhost port 8000")
-#    uvicorn.run(app, host="0.0.0.0", port=8000)

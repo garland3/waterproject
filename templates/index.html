@@ -2,30 +2,42 @@
 <html>
 <head>
     <title>GPIO Control</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        .container {
+            max-width: 80%;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>GPIO Control</h1>
-    {%if message%}
-	<p>{{message}}</p>
-    {%endif%}
-    <table border="1">
-        <tr>
-            <th>Device</th>
-            <th>Action</th>
-        </tr>
-        {% for device, pin in devices.items() %}
-        <tr>
-            <td>{{ device }}</td>
-            <td>
-                <form action="/toggle/{{ device }}/on" method="post" style="display:inline;">
-                    <button type="submit">Turn On</button>
-                </form>
-                <form action="/toggle/{{ device }}/off" method="post" style="display:inline;">
-                    <button type="submit">Turn Off</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="container">
+        <a href="/" class="text-3xl font-bold mb-4">Garden Water Control</a>
+        {%if message%}
+        <p class="text-lg text-green-600">{{ message }}</p>
+        {%endif%}
+        <table class="table-auto border-collapse w-full">
+            <tr>
+                <th class="px-4 py-2">Device</th>
+                <th class="px-4 py-2">Status</th>
+                <th class="px-4 py-2">Action</th>
+            </tr>
+            {% for device in devices %}
+            <tr class="{{ 'bg-green-200' if device.state else 'bg-red-200' }}">
+                <td class="px-4 py-2">{{ device.name }}</td>
+                <td class="px-4 py-2">{{ device.state }}</td>
+                <td class="px-4 py-2">
+                    <form action="/toggle/{{ device.pin }}" method="post" style="display:inline;">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Toggle</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 </body>
 </html>
