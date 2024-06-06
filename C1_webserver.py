@@ -91,4 +91,4 @@ async def toggle_device(pin: int, request: Request):
             device.toggle()
             break
     return templates.TemplateResponse("index.html", {"request": request, "devices": devices})
-
+#  uvicorn C1_webserver:app --reload
