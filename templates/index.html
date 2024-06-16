@@ -1,16 +1,17 @@
-<!-- index.html -->
+set<!-- index.html -->
 {% extends "base.html" %}
 
 {% block title %}Garden Water Control{% endblock %}
 
 {% block content %}
+<div class="max-w-full mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
     <a href="/" class="text-3xl font-bold mb-4">Garden Water Control</a>
     <p> Current time is: {{current_time}}</p>
     {% if message %}
     <p class="text-lg text-green-300">{{ message }}</p>
     {% endif %}
-    
-    <table class="table-auto border-collapse mx-auto">
+
+    <table class="table-auto border-collapse ">
         <tr>
             <th class="px-4 py-2 text-center">Device</th>
             <th class="px-4 py-2 text-center">Location</th>
@@ -24,16 +25,26 @@
             <td class="px-4 py-2 text-center">{{ "ON" if device.state else "OFF" }}</td>
             <td class="px-4 py-2 text-center">
                 <form action="/toggle/{{ device.pin }}" method="post" style="display:inline;">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Toggle</button>
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Toggle</button>
                 </form>
             </td>
         </tr>
         {% endfor %}
     </table>
     <p class="text-center mt-4 mb-4">
-        <a href="/schedule" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Set Schedule</a>
+        <a href="/schedule" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create and View
+            Task/Schedule</a>
     </p>
     <p class="text-center mt-4 mb-4">
-        <a href="/log_download" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Download Log</a>
+        <a href="/log_download" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Download
+            Log</a>
     </p>
+    <!-- reload schedule button-->
+    <p class="text-center mt-4 mb-4">
+        <a href="/reload_schedule" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Reload
+            Schedule</a>
+
+    </p>
+</div>
 {% endblock %}
