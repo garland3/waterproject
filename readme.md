@@ -14,5 +14,7 @@ pip freeze > requirements.txt
 
 create conda env with 
 ```bash
-conda create --name waterproject --file requirements.txt
+# conda create --name waterproject --file requirements.txt
+ conda create --name waterproject  python=3.11
+ pip install -r requirements.txt
 ```

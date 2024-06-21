@@ -9,10 +9,15 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from helper import Device, TaskListManager, devices,  log_file, Task, setup_gpio
+# from helper import Device, TaskListManager, devices,  log_file, Task, setup_gpio
+from lib.Device import Device, setup_gpio, create_devices
+from lib.Task import Task   
+from lib.TaskListManager import TaskListManager
+from lib.Utilities import log_file
 
+devices = create_devices()
+setup_gpio(devices)
 
-setup_gpio()
 
 task_list_manager = TaskListManager(devices=devices)
 
@@ -33,7 +38,7 @@ async def read_root(request: Request):
 # show log
 @app.get("/log_download")
 async def log_download():
-    return FileResponse(log_file, filename='log.csv')
+    return FileResponse(log_file, filename=log_file, media_type='text/csv')
 
 # reload the schedule from disk
 @app.get("/reload_schedule")
