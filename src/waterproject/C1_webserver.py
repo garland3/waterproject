@@ -10,10 +10,10 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 # from helper import Device, TaskListManager, devices,  log_file, Task, setup_gpio
-from lib.Device import Device, setup_gpio, create_devices
-from lib.Task import Task   
-from lib.TaskListManager import TaskListManager
-from lib.Utilities import log_file
+from waterproject.lib.Device import Device, setup_gpio, create_devices
+from waterproject.lib.Task import Task   
+from waterproject.lib.TaskListManager import TaskListManager
+from waterproject.lib.Utilities import log_file
 
 devices = create_devices()
 setup_gpio(devices)
