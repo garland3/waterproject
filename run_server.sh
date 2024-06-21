@@ -1,5 +1,6 @@
+echo "run as 'bash run_server.sh'"
 echo "Starting the uvicorn server"
 echo `pwd`
-pip install -e .
 source waterproject/bin/activate
-uvicorn waterproject.C1_webserver:app --port 8000 --reload --host 0.0.0.0
+python -m pip install -e .
+python -m uvicorn waterproject.C1_webserver:app --port 8000 --reload --host 0.0.0.0
