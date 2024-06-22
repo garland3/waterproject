@@ -40,6 +40,13 @@ async def read_root(request: Request):
 async def log_download():
     return FileResponse(log_file, filename=log_file, media_type='text/csv')
 
+@app.get("/log_display")
+async def log_display():
+    with open(log_file, 'r') as f:
+        log_content = f.read()
+    html_content = f"<html><body><pre>{log_content}</pre></body></html>"
+    return HTMLResponse(content=html_content, media_type="text/html")
+
 # reload the schedule from disk
 @app.get("/reload_schedule")
 async def reload_schedule(request: Request):

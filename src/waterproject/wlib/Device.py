@@ -21,13 +21,13 @@ class Device:
         self.turn_on_times=[]
         self.turn_off_times=[]
         
-    def set_state(self, state:int):
+    def set_state(self, state_int:int):
         """State must be an int of 0 or 1, 0 is off, 1 is on"""
         
-        self.state = state
-        if self.state  ==0:
+        self.state = True if state_int == 1 else False
+        if self.state  ==False:
             value = GPIO.LOW 
-        elif self.state ==1:
+        elif self.state == True:
             value = GPIO.HIGH
         else:
             raise ValueError("Invalid state")
