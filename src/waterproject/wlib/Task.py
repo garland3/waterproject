@@ -49,7 +49,7 @@ class Task:
         """Add the task to the scheduler"""
         for device in devices:
             if device.pin == self.PIN:
-                fn_set_state_on = partial( device.set_state,state= 1)
+                fn_set_state_on = partial( device.set_state,state_int= 1)
                 
                 cron_days = self.cron_days()
                 cron_start_time_hour = self.cron_start_time_hour()
@@ -67,7 +67,7 @@ class Task:
                 # use the vars above to print out. 
                 print(f"Added job ON {self.PIN}, cron_days={cron_days}, cron_start_time_hour={cron_start_time_hour}, cron_start_time_minute={cron_start_time_minute}, cron_end_time_hour={cron_end_time_hour}, cron_end_time_minute={cron_end_time_minute}")
                                 
-                fn_set_state_off = partial( device.set_state, state=0)
+                fn_set_state_off = partial( device.set_state, state_int=0)
                 self.scheduler_job_off = scheduler.add_job(
                     fn_set_state_off,
                     'cron',
