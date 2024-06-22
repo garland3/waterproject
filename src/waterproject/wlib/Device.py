@@ -25,12 +25,9 @@ class Device:
         """State must be an int of 0 or 1, 0 is off, 1 is on"""
         
         self.state = True if state_int == 1 else False
-        if self.state  ==False:
-            value = GPIO.LOW 
-        elif self.state == True:
-            value = GPIO.HIGH
-        else:
-            raise ValueError("Invalid state")
+
+        # NOTE. This seems backwards.  But is correct
+        value = GPIO.LOW if self.state  else GPIO.HIGH
         
         GPIO.output(self.pin, value)
         self.write_log()
@@ -46,6 +43,7 @@ class Device:
 
     def toggle(self):
         self.state = not self.state
+        # NOTE. This seems backwards.  But is correct
         GPIO.output(self.pin, GPIO.LOW if self.state else GPIO.HIGH)
         self.write_log()
             
