@@ -4,8 +4,8 @@ import time
 computer_name = platform.node()
 print(computer_name)
 
-
-from fastapi import FastAPI, Request
+import subprocess
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -26,10 +26,10 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory="src/waterproject/templates")
 
-def common_return(request):
+def common_return(request, message = None):
     # get the  day of the week  and time to the second and add it to the context
     current_time = time.strftime("%A %H:%M:%S")
-    return templates.TemplateResponse("index.html", {"request": request, "devices": devices, "current_time": current_time})
+    return templates.TemplateResponse("index.html", {"request": request, "devices": devices, "current_time": current_time, "message": message})
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -115,3 +115,21 @@ async def set_schedule(request: Request):
 async def delete_task(ID: int, request: Request):
     task_list_manager.delete_task(ID)
     return common_response_for_schedule(request)
+
+
+
+
+
+@app.get("/update_code")
+async def update_code(request: Request):
+    try:
+        r = subprocess.run(["git", "pull", "origin", 'main'], check=True)
+        response = ""
+        if r.stderr:
+            response += r.stderr.decode('utf-8')
+        if r.stdout:
+            response += r.stdout.decode('utf-8')
+        # return Response(status_code=200, content="Code updated successfully.")
+        return common_return(request, message=f"Process completed successfully: {response}. Server will restart")
+    except subprocess.CalledProcessError as e:
+        return Response(status_code=500, content=f"Error updating code: {e}")
