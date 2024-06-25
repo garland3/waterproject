@@ -4,9 +4,11 @@
 
 For my raspberry pi controlled garden watering system
 
-I the raspberry pi hooked up to some relays that control the water flow to the garden.
-The relays control the pump and valves to different parts of the garden.
-I collect rain water in IPC totes and pump it to the garden.
+I'm using the GPIO pins on the raspberry pi to control some relays and pump which water my garden from a rain collection system.
+
+The GPIO uses a level shifter (3.3V to 5V) to control the 5v relays. The 5V also go to the valves. The pump is 120V and is also controlled by a relay.
+
+I collect rain water in IPC totes.
 
 The goal is to schedule the watering of the garden using something like `cron` and also have a web interface to control the watering system.
 
@@ -92,7 +94,6 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
-
 Then
 
 ```bash
@@ -106,4 +107,14 @@ sudo journalctl -u uvicorn.service | tail -n 30
 ```
 
 I added a static IP on my home network to the raspberry pi so I can access the web interface from any device on my network.
+
+
+## Future
+
+* edit schedule
+* add more devices
+* measure the water level 
+* add a camera to take pictures of the garden
+* pull weather data to adjust watering schedule
+* add some unit and integration testing
 
