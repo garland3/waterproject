@@ -74,12 +74,13 @@ async def toggle_device(pin: int, request: Request):
 #                      Show Schedule and Tasks
 # -------------------------------------------------
 
-def common_response_for_schedule(request):
+def common_response_for_schedule(request, existing_task = None):
     current_time = time.strftime("%A %H:%M:%S")
     task_list_manager.add_location_to_tasks(devices)
     return templates.TemplateResponse("set_schedule.html", {"request": request, "devices": devices, 
                                                             "tasks":task_list_manager.tasks, 
-                                                            "current_time": current_time})   
+                                                            "current_time": current_time, 
+                                                            'existing_task': existing_task})   
 
 
 @app.get("/schedule", response_class=HTMLResponse)
@@ -111,15 +112,24 @@ async def set_schedule(request: Request):
 # -------------------- Schedule/Task -------------------
 #                      DELETE
 # -------------------------------------------------
-@app.get("/delete_task/{ID}", response_class=HTMLResponse)
-async def delete_task(ID: int, request: Request):
-    task_list_manager.delete_task(ID)
+@app.get("/delete_task/{id}", response_class=HTMLResponse)
+async def delete_task(id: int, request: Request):
+    task_list_manager.delete_task(id)
     return common_response_for_schedule(request)
 
 
+# ----------- EDIT TASK ----------- NOT FINISHED
+@app.get("/edit_task/{id}", response_class=HTMLResponse)
+async def delete_task(id: int, request: Request):
+    # delete the existing task and then add a new one
+    task_list_manager.delete_task(id)
+    return common_response_for_schedule(request)
+    # common_response_for_schedule(request) 
 
 
 
+
+# ------------------------------------------------- Do a git pull. EAsier than logging in to the raspberry pi on terminal
 @app.get("/update_code")
 async def update_code(request: Request):
     try:

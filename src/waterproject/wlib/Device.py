@@ -1,3 +1,4 @@
+import json
 import platform
 from waterproject.wlib.Utilities import log_file
 import time
@@ -47,15 +48,19 @@ class Device:
         GPIO.output(self.pin, GPIO.LOW if self.state else GPIO.HIGH)
         self.write_log()
             
-def create_devices():
-    devices = [
-        Device("power_cable_solenoid", 12, "Top of Water Containers"),
-        Device("valve_1", 25, "Middle Garden"),
-        Device("valve_2", 23, "Rock Wall Garden"),
-        Device("valve_3", 18, "Grape Garden"),
-    ]
+# def create_devices():
+#     devices = [
+#         Device("power_cable_solenoid", 12, "Top of Water Containers"),
+#         Device("valve_1", 25, "Middle Garden"),
+#         Device("valve_2", 23, "Rock Wall Garden"),
+#         Device("valve_3", 18, "Grape Garden"),
+#     ]
+#     return devices
+def create_devices(file_path="devices.json"):
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    devices = [Device(device['name'], device['pin'], device['location']) for device in data]
     return devices
-
 
 # Setup GPIO
 def setup_gpio(devices):

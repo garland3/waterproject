@@ -1,0 +1,23 @@
+[
+    {
+      "name": "power_cable_solenoid",
+      "pin": 12,
+      "location": "Top of Water Containers"
+    },
+    {
+      "name": "valve_1",
+      "pin": 25,
+      "location": "Middle Garden"
+    },
+    {
+      "name": "valve_2",
+      "pin": 23,
+      "location": "Rock Wall Garden"
+    },
+    {
+      "name": "valve_3",
+      "pin": 18,
+      "location": "Grape Garden"
+    }
+  ]
+  

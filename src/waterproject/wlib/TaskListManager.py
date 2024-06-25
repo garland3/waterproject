@@ -14,12 +14,24 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 from waterproject.wlib.Device import Device
 from waterproject.wlib.Task import Task
+from waterproject.wlib.TaskInterface import TaskInterface
 
 def my_listener(event):
     if event.exception:
         print('The job crashed :(')
     else:
         print('The job worked :)')
+        
+
+
+    def remove_task(self, task: Task):
+        """Remove the task from the scheduler"""
+        if task.scheduler_job_on:
+            task.scheduler_job_on.remove()
+            print(f"Removed job ON {task.id}, {task.PIN}, {task.days_of_week}, {task.start_time}, {task.end_time}")
+        if task.scheduler_job_off:
+            task.scheduler_job_off.remove()
+            print(f"Removed job OFF {task.id}, {task.PIN}, {task.days_of_week}, {task.start_time}, {task.end_time}")
 
         
         
@@ -43,7 +55,8 @@ class TaskListManager:
             
     def add_task(self, task: Task, write_to_file=True):
         """Add and write a task to the schedule"""
-        task.add_task_to_schedule(self.scheduler, self.devices)
+        task_inteface = TaskInterface(self.scheduler, self.devices)
+        task_inteface.add_task(task)
         self.tasks.append(task)
         if write_to_file:
             self.write_schedule()
@@ -51,8 +64,11 @@ class TaskListManager:
     def delete_task(self, task_id: int):
         """Delete a task from the schedule"""
         for task in self.tasks:
-            if task.ID == task_id:
-                task.remove_task_from_schedule()
+            if task.id == task_id:
+                 # task.remove_task_from_schedule()
+                task_inteface = TaskInterface(self.scheduler, self.devices)
+                task_inteface.remove_task(task)
+
                 self.tasks.remove(task)
                 self.write_schedule()
                 break
@@ -97,7 +113,7 @@ class TaskListManager:
                 "days_of_week": task.days_of_week,
                 "start_time": task.start_time,
                 "end_time": task.end_time,
-                "id": task.ID
+                "id": task.id
             })
         
         with open(self.file_path, 'w') as f:

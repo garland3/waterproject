@@ -20,7 +20,9 @@
             <th class="px-4 py-2 text-center">Days of Week</th>
             <th class="px-4 py-2 text-center">Start Time</th>
             <th class="px-4 py-2 text-center">End Time</th>
-            <th class="px-4 py-2 text-center">Action</th>
+            <!-- <th class="px-4 py-2 text-center">Edit</th> -->
+            <th class="px-4 py-2 text-center">Delete</th>
+
         </tr>
         {% for task in tasks %}
         <tr>
@@ -28,8 +30,13 @@
             <td class="px-4 py-2 text-center">{{ task.days_of_week }}</td>
             <td class="px-4 py-2 text-center">{{ task.start_time }}</td>
             <td class="px-4 py-2 text-center">{{ task.end_time }}</td>
+            <!-- <td class="px-4 py-2 text-center">
+                <a href="/edit_task/{{ task.id }}"
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Edit</a>
+            </td> -->
             <td class="px-4 py-2 text-center">
-                <a href="/delete_task/{{ task.ID }}"
+                <a href="/delete_task/{{ task.id }}"
                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</a>
             </td>
         </tr>

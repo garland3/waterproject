@@ -12,11 +12,8 @@ class Task:
         self.days_of_week = days_of_week
         self.start_time = start_time
         self.end_time = end_time
-        # make a unique ID for the task, random number between 1 and 100000
-        if id:
-            self.ID = id
-        else:
-            self.ID = random.randint(1, 100000)
+        # make a unique id for the task, random number between 1 and 100000
+        self.id = id if id else random.randint(1, 100000)    
             
         self.scheduler_job_on = None
         self.scheduler_job_off = None
@@ -45,51 +42,7 @@ class Task:
         """return the int minute of the end time"""
         return int(self.end_time.split(":")[1])
     
-    def add_task_to_schedule(self,scheduler: AsyncIOScheduler, devices: list[Device]):
-        """Add the task to the scheduler"""
-        for device in devices:
-            if device.pin == self.PIN:
-                fn_set_state_on = partial( device.set_state,state_int= 1)
-                
-                cron_days = self.cron_days()
-                cron_start_time_hour = self.cron_start_time_hour()
-                cron_start_time_minute = self.cron_start_time_minute()
-                cron_end_time_hour = self.cron_end_time_hour()
-                cron_end_time_minute = self.cron_end_time_minute()
-                self.scheduler_job_on = scheduler.add_job(
-                   fn_set_state_on,
-                    'cron',
-                    day_of_week=cron_days,
-                    hour=cron_start_time_hour,
-                    minute=cron_start_time_minute,
-                    replace_existing=True
-                )
-                # use the vars above to print out. 
-                print(f"Added job ON {self.PIN}, cron_days={cron_days}, cron_start_time_hour={cron_start_time_hour}, cron_start_time_minute={cron_start_time_minute}, cron_end_time_hour={cron_end_time_hour}, cron_end_time_minute={cron_end_time_minute}")
-                                
-                fn_set_state_off = partial( device.set_state, state_int=0)
-                self.scheduler_job_off = scheduler.add_job(
-                    fn_set_state_off,
-                    'cron',
-                    day_of_week=cron_days,
-                    hour=cron_end_time_hour,
-                    minute=cron_end_time_minute,
-                    replace_existing=True
-                )
-                break   
-            
-    def remove_task_from_schedule(self):
-        """Remove the task from the scheduler"""
-        if self.scheduler_job_on:
-            self.scheduler_job_on.remove()
-            print(f"Removed job ON {self.ID}, {self.PIN}, {self.days_of_week}, {self.start_time}, {self.end_time}")
-        if self.scheduler_job_off:
-            self.scheduler_job_off.remove()                
-            print(f"Removed job OFF {self.ID}, {self.PIN}, {self.days_of_week}, {self.start_time}, {self.end_time}")
-            
-            
-            
-    
+
     
 
 
