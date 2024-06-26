@@ -1,4 +1,4 @@
-# Water project
+# GPIO Raspberry Pi Webserver Project
 
 ## Overview
 
@@ -42,11 +42,13 @@ create conda env with
 
 ## Device configuration
 
-You can modify your PINS, location, and name by changing the `devices.json` file. Mine looks like.
+You can modify your PINS, location, and name by changing the `config.json` file. Mine looks like.
 
 ```json
 
-[
+{
+"project_name": "Garden Water Control",
+"devices":[
     {
       "name": "power_cable_solenoid",
       "pin": 12,
@@ -68,6 +70,7 @@ You can modify your PINS, location, and name by changing the `devices.json` file
       "location": "Grape Garden"
     }
   ]
+}
   
 ```
 

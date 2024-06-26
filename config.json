@@ -1,4 +1,6 @@
-[
+{
+"project_name": "Garden Water Control",
+"devices":[
     {
       "name": "power_cable_solenoid",
       "pin": 12,
@@ -20,4 +22,4 @@
       "location": "Grape Garden"
     }
   ]
-  
+}

@@ -10,12 +10,12 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 # from helper import Device, TaskListManager, devices,  log_file, Task, setup_gpio
-from waterproject.wlib.Device import Device, setup_gpio, create_devices
+from waterproject.wlib.Device import Device, setup_gpio
 from waterproject.wlib.Task import Task   
 from waterproject.wlib.TaskListManager import TaskListManager
-from waterproject.wlib.Utilities import log_file
+from waterproject.wlib.Utilities import log_file , read_configuration
 
-devices = create_devices()
+devices, project_name = read_configuration()
 setup_gpio(devices)
 
 
@@ -29,7 +29,7 @@ templates = Jinja2Templates(directory="src/waterproject/templates")
 def common_return(request, message = None):
     # get the  day of the week  and time to the second and add it to the context
     current_time = time.strftime("%A %H:%M:%S")
-    return templates.TemplateResponse("index.html", {"request": request, "devices": devices, "current_time": current_time, "message": message})
+    return templates.TemplateResponse("index.html", {"request": request, "project_name": project_name, "devices": devices, "current_time": current_time, "message": message})
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):

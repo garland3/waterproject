@@ -1,6 +1,5 @@
 import json
 import platform
-from waterproject.wlib.Utilities import log_file
 import time
 computer_name = platform.node()
 if computer_name=="DESKTOP-7DC3UA9" or computer_name=='desktop':
@@ -38,6 +37,9 @@ class Device:
     def write_log(self):    
         # append the name, pin, location, state and time to the log file, put quotes around the name and location, use the full date and time
         # seperate with commas
+        
+        # importing now is dumb, but prevents circular import
+        from waterproject.wlib.Utilities import log_file
         with open(log_file, "a") as f:
             f.write(f'"{self.name}", {self.pin}, "{self.location}", {self.state}, {time.strftime("%Y-%m-%d %H:%M:%S")}\n')
 
@@ -56,11 +58,7 @@ class Device:
 #         Device("valve_3", 18, "Grape Garden"),
 #     ]
 #     return devices
-def create_devices(file_path="devices.json"):
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    devices = [Device(device['name'], device['pin'], device['location']) for device in data]
-    return devices
+
 
 # Setup GPIO
 def setup_gpio(devices):
