@@ -42,7 +42,7 @@ create conda env with
 
 ## Device configuration
 
-You can modify your PINS, location, and name by changing the `config.json` file. Mine looks like.
+You can modify your PINS, location, and name by changing the `config.json` file. Mine looks like. You can also change the project name.
 
 ```json
 
