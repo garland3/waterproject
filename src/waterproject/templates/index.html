@@ -10,6 +10,13 @@
     {% if message %}
     <p class="text-lg text-green-300">{{ message }}</p>
     {% endif %}
+    {% if is_paused %}
+    <p class="text-lg text-red-300">The scheduler is paused</p>
+    <p class="text-lg text-red-300">Wake up time is at {{wakeup_time}} </p>
+    <p class="text-center mt-2 mb-2">
+        <a href="/unpause_tasks" class="bg-gray-500 hover:bg-gray-700 text-white text-sm font-bold py-1 px-2 rounded">Unpause</a>
+    </p>
+    {% endif %}
 
     <table class="table-auto border-collapse ">
         <tr>

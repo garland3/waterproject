@@ -5,7 +5,7 @@ computer_name = platform.node()
 print(computer_name)
 
 import subprocess
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Form, Request, Response
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -29,7 +29,12 @@ templates = Jinja2Templates(directory="src/waterproject/templates")
 def common_return(request, message = None):
     # get the  day of the week  and time to the second and add it to the context
     current_time = time.strftime("%A %H:%M:%S")
-    return templates.TemplateResponse("index.html", {"request": request, "project_name": project_name, "devices": devices, "current_time": current_time, "message": message})
+    return templates.TemplateResponse("index.html", {"request": request, 
+                                                     "project_name": project_name, "devices": devices, 
+                                                     "current_time": current_time, "message": message, 
+                                                     "is_paused": task_list_manager.is_paused, 
+                                                     "wakeup_time": task_list_manager.wakeup_time
+                                                     })
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -80,7 +85,10 @@ def common_response_for_schedule(request, existing_task = None):
     return templates.TemplateResponse("set_schedule.html", {"request": request, "devices": devices, 
                                                             "tasks":task_list_manager.tasks, 
                                                             "current_time": current_time, 
-                                                            'existing_task': existing_task})   
+                                                            'existing_task': existing_task, 
+                                                            "is_paused": task_list_manager.is_paused,
+                                                            "wakeup_time": task_list_manager.wakeup_time
+                                                            })   
 
 
 @app.get("/schedule", response_class=HTMLResponse)
@@ -127,7 +135,31 @@ async def delete_task(id: int, request: Request):
     # common_response_for_schedule(request) 
 
 
-
+# ------------------ PAUSE TASKS
+# @app.get("/pause_tasks")
+# async def pause_tasks(request: Request):
+#     # get the pause-hours and pause-days from the form
+#     pause_hours = int(request.query_params.get("pause-hours"))
+#     pause_days = int(request.query_params.get("pause-days"))
+#     total_hours = pause_hours * 24 + pause_days
+#     task_list_manager.pause_tasks(total_hours)
+#     return common_response_for_schedule(request)
+@app.post("/pause_tasks")  # Change to POST
+async def pause_tasks(request: Request):
+    form = await request.form()
+    pause_days = int(form["pause_days"])
+    pause_hours =float( form["pause_hours"])
+    total_hours = pause_days * 24 + pause_hours
+    task_list_manager.pause_tasks(total_hours)
+    
+    return common_response_for_schedule(request)
+    
+    
+# unpause
+@app.get("/unpause_tasks")
+async def unpause_tasks(request: Request):
+    task_list_manager.unpause_tasks()
+    return common_response_for_schedule(request)
 
 # ------------------------------------------------- Do a git pull. EAsier than logging in to the raspberry pi on terminal
 @app.get("/update_code")

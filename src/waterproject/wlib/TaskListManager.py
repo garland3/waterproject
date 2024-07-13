@@ -1,4 +1,5 @@
 
+from datetime import datetime, timedelta
 from functools import partial
 import json
 import os
@@ -22,8 +23,12 @@ def my_listener(event):
     else:
         print('The job worked :)')
         
-
-
+def my_listener_pause_unpause(event):
+    if event.exception:
+        print('The pause job crashed :(')
+    else:
+        print('The job pause worked :)')
+        
     def remove_task(self, task: Task):
         """Remove the task from the scheduler"""
         if task.scheduler_job_on:
@@ -49,8 +54,30 @@ class TaskListManager:
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
         self.scheduler.start()
+        self.is_paused = False
+        self.puase_scheduler = None
+        self.wakeup_time = 0
         if load_from_file:
             self.reload_tasks()
+            
+    def pause_tasks(self, hours):
+        # use a timer to pause the tasks and wake up an unpause when fished
+        self.is_paused = True
+        self.scheduler.pause()
+        
+        self.puase_scheduler = AsyncIOScheduler()
+        self.puase_scheduler.add_listener(my_listener_pause_unpause, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+        self.puase_scheduler.start()
+        self.puase_scheduler.add_job(self.unpause_tasks, 'interval', hours=hours)
+        dt = datetime.now() + timedelta(hours=hours)
+        # Add 30 seconds and then truncate to minute
+        rounded_time =  (dt + timedelta(seconds=30)).replace(second=0, microsecond=0)
+        self.wakeup_time = rounded_time.strftime('%Y-%m-%d %H:%M')
+    
+    def unpause_tasks(self):
+        self.is_paused = False
+        self.scheduler.resume()
+        # self.puase_scheduler.shutdown()
             
             
     def add_task(self, task: Task, write_to_file=True):
